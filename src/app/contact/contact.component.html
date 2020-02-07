@@ -35,4 +35,55 @@
       </div>
     </div>
   </div>
+  <div fxFlex fxFlexLayout='20px' class="form-size">
+    <h3>Send us your feedback!</h3>
+    <p>{{feedbackForm.value | json}}{{ feedbackForm.status | json}}</p>
+    <form novalidate (ngSubmit)="onSubmit()" [formGroup]="feedbackForm" #fform="ngForm">
+      <p>
+        <mat-form-field class="half-width">
+          <input matInput formControlName="firstname" placeholder="Firstname" type="text">
+          <mat-error *ngIf="feedbackForm.get('firstname').hasError('required') &&
+             feedbackForm.get('firstname').touched">Firstname is required</mat-error>
+        </mat-form-field>
+        <mat-form-field class="half-width">
+          <input matInput formControlName="lastname" placeholder="Lastname" type="text">
+          <mat-error *ngIf="feedbackForm.get('lastname').hasError('required') &&
+             feedbackForm.get('lastname').touched">Lastname is required</mat-error>
+        </mat-form-field>
+      </p>
+      <p>
+        <mat-form-field class="half-width">
+          <input matInput formControlName="telnum" placeholder="Telephone num" type="tel">
+          <mat-error *ngIf="feedbackForm.get('telnum').hasError('required') &&
+             feedbackForm.get('telnum').touched">Tel num is required</mat-error>
+        </mat-form-field>
+        <mat-form-field class="half-width">
+          <input matInput formControlName="email" placeholder="Email" type="email">
+          <mat-error *ngIf="feedbackForm.get('email').hasError('required') &&
+             feedbackForm.get('email').touched">Email is required</mat-error>
+        </mat-form-field>
+      </p>
+      <table class="form-size">
+        <td>
+          <mat-slide-toggle formControlName="agree">May we contact you?</mat-slide-toggle>
+        </td>
+        <td>
+          <mat-form-field>
+            <mat-select placeholder="How?" formControlName="contacttype">
+              <mat-option *ngFor="let ctype of contactType" [value]="ctype">
+                {{ctype}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </td>
+      </table>
+      <p>
+        <mat-form-field class="full-width">
+          <textarea matInput formControlName="message" placeholder='Write your feedback!' rows=12></textarea>
+        </mat-form-field>
+      </p>
+      <button mat-button type='submit' class="background-primary text-floral-white"
+         [disabled]='feedbackForm.invalid'>Submit</button>
+    </form>
+  </div>
 </div>
