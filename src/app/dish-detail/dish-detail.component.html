@@ -39,6 +39,36 @@
                 </p>
             </mat-list-item>
         </mat-list>
+        <form novalidate (ngSubmit)="onReviewFormSubmit()" [formGroup]="reviewForm" #rform="ngForm">
+            <mat-list>
+                <mat-list-item *ngIf="reviewForm.valid">
+                    <p matLine>{{reviewForm.value.authorcomment}}</p>
+                    <p matLine>{{reviewForm.value.authorstar}}</p>
+                    <p matLine>
+                        <span>-- {{reviewForm.value.authorname}}</span>
+                        <span> {{reviewDate | date}}</span>
+                    </p>
+                </mat-list-item>
+            </mat-list>
+            <p>
+                <mat-form-field class="full-width">
+                    <input matInput formControlName="authorname" placeholder="Name" type="text" required>
+                    <mat-error *ngIf="reviewFormErrors.authorname">{{reviewFormErrors.authorname}}</mat-error>
+                </mat-form-field>
+            </p>
+                <mat-slider formControlName="authorstar" min="1" max="5" step="1"
+                    thumbLabel tickInterval="1" required></mat-slider>
+            <p>
+                <mat-form-field class="full-width">
+                    <textarea matInput formControlName="authorcomment" placeholder="Your Comments"
+                        type="text" rows=8 required></textarea>
+                        <mat-error *ngIf="reviewFormErrors.authorcomment">{{reviewFormErrors.authorcomment}}
+                            </mat-error>
+                </mat-form-field>
+            </p>
+            <button mat-button type='submit' class="background-primary text-floral-white"
+                [disabled]='reviewForm.invalid'>Submit</button>
+        </form>
     </div>
     <div [hidden]="dish" fxFlex>
         <mat-spinner></mat-spinner><h4>Loading . . . Please Wait!</h4>

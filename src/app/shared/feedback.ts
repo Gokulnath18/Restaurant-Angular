@@ -9,3 +9,9 @@ export class Feedback {
 }
 
 export const ContactType = ['None', 'Tel', 'Email'];
+
+export class AuthorReview {
+    authorname: string;
+    authorstar: number;
+    authorcomment: string;
+}
