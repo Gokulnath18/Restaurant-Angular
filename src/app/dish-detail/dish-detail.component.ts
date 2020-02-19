@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, Inject } from '@angular/core';
 import { Params, ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 import { switchMap } from 'rxjs/operators';
@@ -23,8 +23,10 @@ export class DishDetailComponent implements OnInit {
   reviewForm: FormGroup;
   authorReview: AuthorReview;
   reviewDate: Date;
+  errMsg: string;
+  dishCopy: Dish;
   //review: Comment;
-  @ViewChild('rform') reviewFormDirective;
+  @ViewChild('revform',{static: true}) reviewFormDirective: { resetForm: () => void; };
   reviewFormErrors = {
     'authorname': '',
     'authorcomment': ''
@@ -44,15 +46,22 @@ export class DishDetailComponent implements OnInit {
   constructor(private dishService: DishService,
     private route: ActivatedRoute,
     private location: Location,
-    private fb: FormBuilder) { 
+    private fb: FormBuilder,
+    @Inject("BaseURL") private BaseURL) { 
       this.createReviewForm();
     }
 
   ngOnInit() {
-    this.dishService.getDishIds().subscribe((dishIds) => this.dishIds = dishIds);
+    this.dishService.getDishIds().subscribe((dishIds) => this.dishIds = dishIds,
+      errmsg => this.errMsg = <any>errmsg);
     this.route.params.pipe(switchMap(
       (params: Params) => this.dishService.getDish(params['id'])))
-      .subscribe((dish) => { this.dish = dish; this.setPrevNext(dish.id); });
+      .subscribe((dish) => { 
+        this.dish = dish;
+        this.dishCopy = dish;
+        this.setPrevNext(dish.id); 
+      },
+        errmsg => this.errMsg = <any>errmsg);
   }
 
   setPrevNext(dishId: string) {
@@ -77,7 +86,7 @@ export class DishDetailComponent implements OnInit {
     this.onReviewFormValueChanged();
   }
 
-  onReviewFormSubmit() {
+  onReviewFormSubmit(rform: any) {
     this.authorReview = this.reviewForm.value;
     this.reviewDate = new Date();
     const review: Comment = {
@@ -90,14 +99,16 @@ export class DishDetailComponent implements OnInit {
     review.comment = this.reviewForm.value.authorcomment;
     review.author = this.reviewForm.value.authorname;
     review.date = this.reviewDate.toISOString();
-    this.dish.comments.push(review);
+    this.dishCopy.comments.push(review);
+    // this.dishService.putDish(this.dishCopy).subscribe((dish) => {this.dish = dish; this.dishCopy = dish},
+    //   errmsg => {this.dish = null; this.dishCopy = null; this.errMsg = <any>errmsg;});
     console.log(this.authorReview);
     this.reviewForm.reset({
       authorname: '',
       authorstar: 0,
       authorcomment: ''
     }); 
-    this.reviewFormDirective.resetForm();
+    rform.resetForm();
   }
 
   onReviewFormValueChanged(data?: any) {

@@ -8,7 +8,7 @@
                     <h3>{{dish.name | uppercase}}</h3>
                 </mat-card-title>
             </mat-card-header>
-            <img mat-card-image src="{{dish.image}}" alt="{{dish.name}}">
+            <img mat-card-image src="{{BaseURL + '/' + dish.image}}" alt="{{dish.name}}">
             <mat-card-content>
                 <p>{{dish.description}}</p>
             </mat-card-content>
@@ -39,7 +39,7 @@
                 </p>
             </mat-list-item>
         </mat-list>
-        <form novalidate (ngSubmit)="onReviewFormSubmit()" [formGroup]="reviewForm" #rform="ngForm">
+        <form novalidate (ngSubmit)="onReviewFormSubmit(rform)" [formGroup]="reviewForm" #rform="ngForm">
             <mat-list>
                 <mat-list-item *ngIf="reviewForm.valid">
                     <p matLine>{{reviewForm.value.authorcomment}}</p>
@@ -70,8 +70,12 @@
                 [disabled]='reviewForm.invalid'>Submit</button>
         </form>
     </div>
-    <div [hidden]="dish" fxFlex>
+    <div [hidden]="dish || errMsg" fxFlex>
         <mat-spinner></mat-spinner><h4>Loading . . . Please Wait!</h4>
+    </div>
+    <div fxFlex *ngIf="errMsg">
+        <h2>Error!</h2>
+        <h4>{{errMsg}}</h4>
     </div>
 
 </div>
