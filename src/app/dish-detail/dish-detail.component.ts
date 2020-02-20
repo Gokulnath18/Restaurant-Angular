@@ -8,11 +8,21 @@ import { Dish } from '../shared/dish';
 import { DishService } from '../services/dish.service';
 import { AuthorReview } from '../shared/feedback';
 import { Comment } from '../shared/comment';
+import { visibility, flyInOut, expand } from '../animations/app.animation';
 
 @Component({
   selector: 'app-dish-detail',
   templateUrl: './dish-detail.component.html',
-  styleUrls: ['./dish-detail.component.scss']
+  styleUrls: ['./dish-detail.component.scss'],
+  host: {
+    '[@flyInOut]': 'true',
+    'style': 'display: block;'
+    },
+  animations: [
+    visibility(),
+    flyInOut(),
+    expand()
+  ]
 })
 export class DishDetailComponent implements OnInit {
 
@@ -25,6 +35,7 @@ export class DishDetailComponent implements OnInit {
   reviewDate: Date;
   errMsg: string;
   dishCopy: Dish;
+  visibility = 'shown';
   //review: Comment;
   @ViewChild('revform',{static: true}) reviewFormDirective: { resetForm: () => void; };
   reviewFormErrors = {
@@ -55,11 +66,15 @@ export class DishDetailComponent implements OnInit {
     this.dishService.getDishIds().subscribe((dishIds) => this.dishIds = dishIds,
       errmsg => this.errMsg = <any>errmsg);
     this.route.params.pipe(switchMap(
-      (params: Params) => this.dishService.getDish(params['id'])))
+      (params: Params) => {
+        this.visibility = 'hidden';
+        return this.dishService.getDish(params['id']);
+      }))
       .subscribe((dish) => { 
         this.dish = dish;
         this.dishCopy = dish;
-        this.setPrevNext(dish.id); 
+        this.setPrevNext(dish.id);
+        this.visibility = 'shown';
       },
         errmsg => this.errMsg = <any>errmsg);
   }

@@ -36,6 +36,8 @@ import { LeaderService } from './services/leader.service';
 import { LoginComponent } from './login/login.component';
 import { baseURL } from './shared/baseURL';
 import { ProcessHTTPMsgService } from './services/process-httpmsg.service';
+import { HighlightDirective } from './directives/highlight.directive';
+import { FeedbackService } from './services/feedback.service';
 
 
 @NgModule({
@@ -49,6 +51,7 @@ import { ProcessHTTPMsgService } from './services/process-httpmsg.service';
     AboutComponent,
     ContactComponent,
     LoginComponent,
+    HighlightDirective,
   ],
   imports: [
     BrowserModule,
@@ -77,6 +80,7 @@ import { ProcessHTTPMsgService } from './services/process-httpmsg.service';
     PromotionService,
     LeaderService,
     ProcessHTTPMsgService,
+    FeedbackService,
     { provide: "BaseURL", useValue: baseURL }
   ],
   entryComponents: [

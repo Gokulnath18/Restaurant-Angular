@@ -2,18 +2,26 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Feedback, ContactType } from '../shared/feedback';
 import { validateBasis } from '@angular/flex-layout';
+import { flyInOut } from '../animations/app.animation';
+import { FeedbackService } from '../services/feedback.service';
 
 @Component({
   selector: 'app-contact',
   templateUrl: './contact.component.html',
-  styleUrls: ['./contact.component.scss']
+  styleUrls: ['./contact.component.scss'],
+  host: {
+    '[@flyInOut]': 'true',
+    'style': 'display: block;'
+    },
+  animations: [flyInOut()]
 })
 export class ContactComponent implements OnInit {
 
   feedbackForm: FormGroup;
   feedback: Feedback;
   contactType = ContactType;
-  @ViewChild('fform',{static: true}) feebackFormDirective: { resetForm: () => void; };
+  feedBackSubmissionProcess: string = '';
+  // @ViewChild('fform',{static: true}) feebackFormDirective: { resetForm: () => void; };
 
   formErrors = {
     'firstname': '',
@@ -43,7 +51,8 @@ export class ContactComponent implements OnInit {
     }
   }
 
-  constructor(private fb: FormBuilder) { 
+  constructor(private fb: FormBuilder,
+    private feedBackService: FeedbackService) { 
     this.createForm();
   }
 
@@ -66,10 +75,18 @@ export class ContactComponent implements OnInit {
     this.onValueChanged(); // to reset the form
   }
 
-  onSubmit() {
+  onSubmit(fbForm: any) {
     this.feedback = this.feedbackForm.value;
+    this.feedBackSubmissionProcess = 'inProgress';
+    this.feedBackService.submitFeedback(this.feedback).subscribe((feedBack) => {
+      if(feedBack) {
+        this.feedBackSubmissionProcess = 'submitted';
+      }
+    });
     console.log(this.feedback);
-    this.feedbackForm.reset({
+    setTimeout(() => (
+      this.feedBackSubmissionProcess = '',
+      this.feedbackForm.reset({
       firstname: '',
       lastname: '',
       telnum: 0,
@@ -77,8 +94,8 @@ export class ContactComponent implements OnInit {
       agree: false,
       contacttype: 'None',
       message: ''
-    });
-    this.feebackFormDirective.resetForm();
+    }),
+    fbForm.resetForm()), 5000);
   }
 
   onValueChanged(data?: any) {
